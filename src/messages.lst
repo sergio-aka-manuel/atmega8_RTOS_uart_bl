@@ -1,0 +1,1031 @@
+   1               		.file	"messages.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	setHandler
+  12               	setHandler:
+  13               	.LFB15:
+  14               		.file 1 "src/messages.c"
+   1:src/messages.c **** #include "globals.h"
+   2:src/messages.c **** 
+   3:src/messages.c **** #include "messages.h"
+   4:src/messages.c **** 
+   5:src/messages.c **** volatile iTimer lTimer[maxTimers]; 		// список таймеров
+   6:src/messages.c **** volatile iHandler lHandler[maxHandlers];	// список обработчиков
+   7:src/messages.c **** volatile uint8_t numHandlers, numTimers;
+   8:src/messages.c **** 
+   9:src/messages.c **** volatile iMessage lMessage[maxMessages];	// буфер сообщений
+  10:src/messages.c **** volatile uint16_t lMesPointer, hMesPointer;	// указатели на начало и конец �
+  11:src/messages.c **** 
+  12:src/messages.c **** // установка обработчика события
+  13:src/messages.c **** // вызывается: setHandler(MSG_KEY_PRESS, &checkKey);
+  14:src/messages.c **** void setHandler(msg_num msg, handler hnd) {
+  15               		.loc 1 14 0
+  16               		.cfi_startproc
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  22               	.LBB28:
+  15:src/messages.c **** 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+  23               		.loc 1 15 0
+  24 0000 9FB7      		in r25,__SREG__
+  25               	.LVL1:
+  26               	.LBB29:
+  27               	.LBB30:
+  28               		.file 2 "/usr/lib/avr/include/util/atomic.h"
+   1:/usr/lib/avr/include/util/atomic.h **** /* Copyright (c) 2007 Dean Camera
+   2:/usr/lib/avr/include/util/atomic.h ****    All rights reserved.
+   3:/usr/lib/avr/include/util/atomic.h **** 
+   4:/usr/lib/avr/include/util/atomic.h ****    Redistribution and use in source and binary forms, with or without
+   5:/usr/lib/avr/include/util/atomic.h ****    modification, are permitted provided that the following conditions are met:
+   6:/usr/lib/avr/include/util/atomic.h **** 
+   7:/usr/lib/avr/include/util/atomic.h ****    * Redistributions of source code must retain the above copyright
+   8:/usr/lib/avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer.
+   9:/usr/lib/avr/include/util/atomic.h **** 
+  10:/usr/lib/avr/include/util/atomic.h ****    * Redistributions in binary form must reproduce the above copyright
+  11:/usr/lib/avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer in
+  12:/usr/lib/avr/include/util/atomic.h ****      the documentation and/or other materials provided with the
+  13:/usr/lib/avr/include/util/atomic.h ****      distribution.
+  14:/usr/lib/avr/include/util/atomic.h **** 
+  15:/usr/lib/avr/include/util/atomic.h ****    * Neither the name of the copyright holders nor the names of
+  16:/usr/lib/avr/include/util/atomic.h ****      contributors may be used to endorse or promote products derived
+  17:/usr/lib/avr/include/util/atomic.h ****      from this software without specific prior written permission.
+  18:/usr/lib/avr/include/util/atomic.h **** 
+  19:/usr/lib/avr/include/util/atomic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20:/usr/lib/avr/include/util/atomic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21:/usr/lib/avr/include/util/atomic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22:/usr/lib/avr/include/util/atomic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23:/usr/lib/avr/include/util/atomic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24:/usr/lib/avr/include/util/atomic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25:/usr/lib/avr/include/util/atomic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26:/usr/lib/avr/include/util/atomic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27:/usr/lib/avr/include/util/atomic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28:/usr/lib/avr/include/util/atomic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29:/usr/lib/avr/include/util/atomic.h ****   POSSIBILITY OF SUCH DAMAGE.
+  30:/usr/lib/avr/include/util/atomic.h **** */
+  31:/usr/lib/avr/include/util/atomic.h **** 
+  32:/usr/lib/avr/include/util/atomic.h **** /* $Id$ */
+  33:/usr/lib/avr/include/util/atomic.h **** 
+  34:/usr/lib/avr/include/util/atomic.h **** #ifndef _UTIL_ATOMIC_H_
+  35:/usr/lib/avr/include/util/atomic.h **** #define _UTIL_ATOMIC_H_ 1
+  36:/usr/lib/avr/include/util/atomic.h **** 
+  37:/usr/lib/avr/include/util/atomic.h **** #include <avr/io.h>
+  38:/usr/lib/avr/include/util/atomic.h **** #include <avr/interrupt.h>
+  39:/usr/lib/avr/include/util/atomic.h **** 
+  40:/usr/lib/avr/include/util/atomic.h **** #if !defined(__DOXYGEN__)
+  41:/usr/lib/avr/include/util/atomic.h **** /* Internal helper functions. */
+  42:/usr/lib/avr/include/util/atomic.h **** static __inline__ uint8_t __iSeiRetVal(void)
+  43:/usr/lib/avr/include/util/atomic.h **** {
+  44:/usr/lib/avr/include/util/atomic.h ****     sei();
+  45:/usr/lib/avr/include/util/atomic.h ****     return 1;
+  46:/usr/lib/avr/include/util/atomic.h **** }
+  47:/usr/lib/avr/include/util/atomic.h **** 
+  48:/usr/lib/avr/include/util/atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
+  49:/usr/lib/avr/include/util/atomic.h **** {
+  50:/usr/lib/avr/include/util/atomic.h ****     cli();
+  29               		.loc 2 50 0
+  30               	/* #APP */
+  31               	 ;  50 "/usr/lib/avr/include/util/atomic.h" 1
+  32 0002 F894      		cli
+  33               	 ;  0 "" 2
+  34               	.LVL2:
+  35               	/* #NOAPP */
+  36               	.LBE30:
+  37               	.LBE29:
+  16:src/messages.c **** 		if (numHandlers < maxHandlers) {
+  38               		.loc 1 16 0
+  39 0004 2091 0000 		lds r18,numHandlers
+  40 0008 2032      		cpi r18,lo8(32)
+  41 000a 00F4      		brsh .L2
+  17:src/messages.c **** 			lHandler[numHandlers].hnd = hnd; // и регистрируем обработчик
+  42               		.loc 1 17 0
+  43 000c 2091 0000 		lds r18,numHandlers
+  44 0010 30E0      		ldi r19,0
+  45 0012 F901      		movw r30,r18
+  46 0014 EE0F      		lsl r30
+  47 0016 FF1F      		rol r31
+  48 0018 2E0F      		add r18,r30
+  49 001a 3F1F      		adc r19,r31
+  50 001c F901      		movw r30,r18
+  51 001e E050      		subi r30,lo8(-(lHandler))
+  52 0020 F040      		sbci r31,hi8(-(lHandler))
+  53 0022 7283      		std Z+2,r23
+  54 0024 6183      		std Z+1,r22
+  18:src/messages.c **** 			lHandler[numHandlers].msg = msg;
+  55               		.loc 1 18 0
+  56 0026 2091 0000 		lds r18,numHandlers
+  57 002a 30E0      		ldi r19,0
+  58 002c F901      		movw r30,r18
+  59 002e EE0F      		lsl r30
+  60 0030 FF1F      		rol r31
+  61 0032 2E0F      		add r18,r30
+  62 0034 3F1F      		adc r19,r31
+  63 0036 F901      		movw r30,r18
+  64 0038 E050      		subi r30,lo8(-(lHandler))
+  65 003a F040      		sbci r31,hi8(-(lHandler))
+  66 003c 8083      		st Z,r24
+  19:src/messages.c **** 			numHandlers++;
+  67               		.loc 1 19 0
+  68 003e 8091 0000 		lds r24,numHandlers
+  69               	.LVL3:
+  70 0042 8F5F      		subi r24,lo8(-(1))
+  71 0044 8093 0000 		sts numHandlers,r24
+  72               	.LVL4:
+  73               	.L2:
+  74               	.LBB31:
+  75               	.LBB32:
+  51:/usr/lib/avr/include/util/atomic.h ****     return 1;
+  52:/usr/lib/avr/include/util/atomic.h **** }
+  53:/usr/lib/avr/include/util/atomic.h **** 
+  54:/usr/lib/avr/include/util/atomic.h **** static __inline__ void __iSeiParam(const uint8_t *__s)
+  55:/usr/lib/avr/include/util/atomic.h **** {
+  56:/usr/lib/avr/include/util/atomic.h ****     sei();
+  57:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+  58:/usr/lib/avr/include/util/atomic.h ****     (void)__s;
+  59:/usr/lib/avr/include/util/atomic.h **** }
+  60:/usr/lib/avr/include/util/atomic.h **** 
+  61:/usr/lib/avr/include/util/atomic.h **** static __inline__ void __iCliParam(const uint8_t *__s)
+  62:/usr/lib/avr/include/util/atomic.h **** {
+  63:/usr/lib/avr/include/util/atomic.h ****     cli();
+  64:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+  65:/usr/lib/avr/include/util/atomic.h ****     (void)__s;
+  66:/usr/lib/avr/include/util/atomic.h **** }
+  67:/usr/lib/avr/include/util/atomic.h **** 
+  68:/usr/lib/avr/include/util/atomic.h **** static __inline__ void __iRestore(const  uint8_t *__s)
+  69:/usr/lib/avr/include/util/atomic.h **** {
+  70:/usr/lib/avr/include/util/atomic.h ****     SREG = *__s;
+  76               		.loc 2 70 0 discriminator 3
+  77 0048 9FBF      		out __SREG__,r25
+  71:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+  78               		.loc 2 71 0 discriminator 3
+  79               	.LVL5:
+  80 004a 0895      		ret
+  81               	.LBE32:
+  82               	.LBE31:
+  83               	.LBE28:
+  84               		.cfi_endproc
+  85               	.LFE15:
+  87               	.global	killHandler
+  89               	killHandler:
+  90               	.LFB16:
+  20:src/messages.c **** 		}
+  21:src/messages.c **** 	}
+  22:src/messages.c **** }
+  23:src/messages.c **** 
+  24:src/messages.c **** // снятие обработчика события
+  25:src/messages.c **** // вызывается: killHandler(MSG_KEY_PRESS, &checkKey);
+  26:src/messages.c **** // удаляет один последний обработчик.
+  27:src/messages.c **** void killHandler(msg_num msg, handler hnd) {
+  91               		.loc 1 27 0
+  92               		.cfi_startproc
+  93               	.LVL6:
+  94               	/* prologue: function */
+  95               	/* frame size = 0 */
+  96               	/* stack size = 0 */
+  97               	.L__stack_usage = 0
+  28:src/messages.c **** 	if (numHandlers==0)
+  98               		.loc 1 28 0
+  99 004c 9091 0000 		lds r25,numHandlers
+ 100 0050 9923      		tst r25
+ 101 0052 01F4      		brne .+2
+ 102 0054 00C0      		rjmp .L4
+ 103               	.LBB33:
+  29:src/messages.c **** 		return;
+  30:src/messages.c **** 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 104               		.loc 1 30 0
+ 105 0056 4FB7      		in r20,__SREG__
+ 106               	.LVL7:
+ 107               	.LBB34:
+ 108               	.LBB35:
+  50:/usr/lib/avr/include/util/atomic.h ****     return 1;
+ 109               		.loc 2 50 0
+ 110               	/* #APP */
+ 111               	 ;  50 "/usr/lib/avr/include/util/atomic.h" 1
+ 112 0058 F894      		cli
+ 113               	 ;  0 "" 2
+ 114               	.LVL8:
+ 115               	/* #NOAPP */
+ 116               	.LBE35:
+ 117               	.LBE34:
+ 118               	.LBB36:
+  31:src/messages.c **** 		int8_t i, j;
+  32:src/messages.c **** 		j = 0;
+  33:src/messages.c **** 		for (i = numHandlers-1; i >= 0; i--) {
+ 119               		.loc 1 33 0
+ 120 005a 9091 0000 		lds r25,numHandlers
+ 121               	.L7:
+ 122 005e 9150      		subi r25,lo8(-(-1))
+ 123               	.LVL9:
+ 124               		.loc 1 33 0 is_stmt 0 discriminator 2
+ 125 0060 97FD      		sbrc r25,7
+ 126 0062 00C0      		rjmp .L10
+  34:src/messages.c **** 
+  35:src/messages.c **** 			if ((lHandler[i].msg == msg) && (lHandler[i].hnd == hnd)) {
+ 127               		.loc 1 35 0 is_stmt 1
+ 128 0064 E92F      		mov r30,r25
+ 129 0066 092E      		mov __tmp_reg__,r25
+ 130 0068 000C      		lsl r0
+ 131 006a FF0B      		sbc r31,r31
+ 132 006c 9F01      		movw r18,r30
+ 133 006e 220F      		lsl r18
+ 134 0070 331F      		rol r19
+ 135 0072 E20F      		add r30,r18
+ 136 0074 F31F      		adc r31,r19
+ 137 0076 E050      		subi r30,lo8(-(lHandler))
+ 138 0078 F040      		sbci r31,hi8(-(lHandler))
+ 139 007a 2081      		ld r18,Z
+ 140 007c 2813      		cpse r18,r24
+ 141 007e 00C0      		rjmp .L7
+ 142               		.loc 1 35 0 is_stmt 0 discriminator 1
+ 143 0080 2181      		ldd r18,Z+1
+ 144 0082 3281      		ldd r19,Z+2
+ 145 0084 2617      		cp r18,r22
+ 146 0086 3707      		cpc r19,r23
+ 147 0088 01F4      		brne .L7
+ 148               	.LVL10:
+ 149               	.L8:
+  36:src/messages.c **** 
+  37:src/messages.c **** 				// сдвигаем все записи к началу списка, чтобы дырок н�
+  38:src/messages.c **** 				for (j = i; j < numHandlers-1 ; j++) {
+ 150               		.loc 1 38 0 is_stmt 1 discriminator 1
+ 151 008a A92F      		mov r26,r25
+ 152 008c 092E      		mov __tmp_reg__,r25
+ 153 008e 000C      		lsl r0
+ 154 0090 BB0B      		sbc r27,r27
+ 155 0092 2091 0000 		lds r18,numHandlers
+ 156 0096 30E0      		ldi r19,0
+ 157 0098 2150      		subi r18,1
+ 158 009a 3109      		sbc r19,__zero_reg__
+ 159 009c A217      		cp r26,r18
+ 160 009e B307      		cpc r27,r19
+ 161 00a0 04F4      		brge .L15
+  39:src/messages.c **** 					lHandler[j].msg = lHandler[j + 1].msg;
+ 162               		.loc 1 39 0 discriminator 3
+ 163 00a2 FD01      		movw r30,r26
+ 164 00a4 3196      		adiw r30,1
+ 165 00a6 9F01      		movw r18,r30
+ 166 00a8 220F      		lsl r18
+ 167 00aa 331F      		rol r19
+ 168 00ac E20F      		add r30,r18
+ 169 00ae F31F      		adc r31,r19
+ 170 00b0 E050      		subi r30,lo8(-(lHandler))
+ 171 00b2 F040      		sbci r31,hi8(-(lHandler))
+ 172 00b4 8081      		ld r24,Z
+ 173 00b6 9D01      		movw r18,r26
+ 174 00b8 220F      		lsl r18
+ 175 00ba 331F      		rol r19
+ 176 00bc A20F      		add r26,r18
+ 177 00be B31F      		adc r27,r19
+ 178 00c0 A050      		subi r26,lo8(-(lHandler))
+ 179 00c2 B040      		sbci r27,hi8(-(lHandler))
+ 180 00c4 8C93      		st X,r24
+  40:src/messages.c **** 					lHandler[j].hnd = lHandler[j + 1].hnd;
+ 181               		.loc 1 40 0 discriminator 3
+ 182 00c6 2181      		ldd r18,Z+1
+ 183 00c8 3281      		ldd r19,Z+2
+ 184 00ca 1296      		adiw r26,1+1
+ 185 00cc 3C93      		st X,r19
+ 186 00ce 2E93      		st -X,r18
+ 187 00d0 1197      		sbiw r26,1
+ 188 00d2 9F5F      		subi r25,lo8(-(1))
+ 189               	.LVL11:
+ 190 00d4 00C0      		rjmp .L8
+ 191               	.L15:
+  41:src/messages.c **** 				}
+  42:src/messages.c **** 				numHandlers--;
+ 192               		.loc 1 42 0
+ 193 00d6 8091 0000 		lds r24,numHandlers
+ 194 00da 8150      		subi r24,lo8(-(-1))
+ 195 00dc 8093 0000 		sts numHandlers,r24
+ 196               	.LVL12:
+ 197               	.L10:
+ 198               	.LBE36:
+ 199               	.LBB37:
+ 200               	.LBB38:
+  70:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 201               		.loc 2 70 0 discriminator 3
+ 202 00e0 4FBF      		out __SREG__,r20
+ 203               		.loc 2 71 0 discriminator 3
+ 204               	.LVL13:
+ 205               	.L4:
+ 206 00e2 0895      		ret
+ 207               	.LBE38:
+ 208               	.LBE37:
+ 209               	.LBE33:
+ 210               		.cfi_endproc
+ 211               	.LFE16:
+ 213               	.global	sendMessage
+ 215               	sendMessage:
+ 216               	.LFB17:
+  43:src/messages.c **** 				break;
+  44:src/messages.c **** 			}
+  45:src/messages.c **** 		}
+  46:src/messages.c **** 
+  47:src/messages.c **** 	}
+  48:src/messages.c **** }
+  49:src/messages.c **** 
+  50:src/messages.c **** // занести событие в очередь
+  51:src/messages.c **** // пример вызова: sendMessage(MSG_KEY_PRESS, KEY_MENU)
+  52:src/messages.c **** void sendMessage(msg_num msg, msg_par par) {
+ 217               		.loc 1 52 0
+ 218               		.cfi_startproc
+ 219               	.LVL14:
+ 220               	/* prologue: function */
+ 221               	/* frame size = 0 */
+ 222               	/* stack size = 0 */
+ 223               	.L__stack_usage = 0
+ 224               	.LBB39:
+  53:src/messages.c **** 
+  54:src/messages.c **** 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 225               		.loc 1 54 0
+ 226 00e4 4FB7      		in r20,__SREG__
+ 227               	.LVL15:
+ 228               	.LBB40:
+ 229               	.LBB41:
+  50:/usr/lib/avr/include/util/atomic.h ****     return 1;
+ 230               		.loc 2 50 0
+ 231               	/* #APP */
+ 232               	 ;  50 "/usr/lib/avr/include/util/atomic.h" 1
+ 233 00e6 F894      		cli
+ 234               	 ;  0 "" 2
+ 235               	.LVL16:
+ 236               	/* #NOAPP */
+ 237               	.LBE41:
+ 238               	.LBE40:
+  55:src/messages.c **** 		hMesPointer = (hMesPointer + 1) & (maxMessages - 1); // сдвигаем указатель го�
+ 239               		.loc 1 55 0
+ 240 00e8 2091 0000 		lds r18,hMesPointer
+ 241 00ec 3091 0000 		lds r19,hMesPointer+1
+ 242 00f0 2F5F      		subi r18,-1
+ 243 00f2 3F4F      		sbci r19,-1
+ 244 00f4 2F73      		andi r18,63
+ 245 00f6 3327      		clr r19
+ 246 00f8 3093 0000 		sts hMesPointer+1,r19
+ 247 00fc 2093 0000 		sts hMesPointer,r18
+  56:src/messages.c **** 
+  57:src/messages.c **** 		lMessage[hMesPointer].msg = msg; // заносим событие и параметр
+ 248               		.loc 1 57 0
+ 249 0100 2091 0000 		lds r18,hMesPointer
+ 250 0104 3091 0000 		lds r19,hMesPointer+1
+ 251 0108 F901      		movw r30,r18
+ 252 010a EE0F      		lsl r30
+ 253 010c FF1F      		rol r31
+ 254 010e 2E0F      		add r18,r30
+ 255 0110 3F1F      		adc r19,r31
+ 256 0112 F901      		movw r30,r18
+ 257 0114 E050      		subi r30,lo8(-(lMessage))
+ 258 0116 F040      		sbci r31,hi8(-(lMessage))
+ 259 0118 8083      		st Z,r24
+  58:src/messages.c **** 		lMessage[hMesPointer].par = par;
+ 260               		.loc 1 58 0
+ 261 011a 8091 0000 		lds r24,hMesPointer
+ 262 011e 9091 0000 		lds r25,hMesPointer+1
+ 263               	.LVL17:
+ 264 0122 FC01      		movw r30,r24
+ 265               	.LVL18:
+ 266 0124 EE0F      		lsl r30
+ 267 0126 FF1F      		rol r31
+ 268               	.LVL19:
+ 269 0128 8E0F      		add r24,r30
+ 270 012a 9F1F      		adc r25,r31
+ 271 012c FC01      		movw r30,r24
+ 272 012e E050      		subi r30,lo8(-(lMessage))
+ 273 0130 F040      		sbci r31,hi8(-(lMessage))
+ 274 0132 7283      		std Z+2,r23
+ 275 0134 6183      		std Z+1,r22
+  59:src/messages.c **** 		if (hMesPointer == lMesPointer) { // догнали начало очереди, убиваем �
+ 276               		.loc 1 59 0
+ 277 0136 2091 0000 		lds r18,hMesPointer
+ 278 013a 3091 0000 		lds r19,hMesPointer+1
+ 279 013e 8091 0000 		lds r24,lMesPointer
+ 280 0142 9091 0000 		lds r25,lMesPointer+1
+ 281 0146 2817      		cp r18,r24
+ 282 0148 3907      		cpc r19,r25
+ 283 014a 01F0      		breq .L17
+ 284               	.LVL20:
+ 285               	.L18:
+ 286               	.LBB42:
+ 287               	.LBB43:
+  70:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 288               		.loc 2 70 0
+ 289 014c 4FBF      		out __SREG__,r20
+ 290               		.loc 2 71 0
+ 291               	.LVL21:
+ 292               	.LBE43:
+ 293               	.LBE42:
+ 294               	.LBE39:
+  60:src/messages.c **** 			lMesPointer = (lMesPointer + 1) & (maxMessages - 1);
+  61:src/messages.c **** 		}
+  62:src/messages.c **** 	}
+  63:src/messages.c **** }
+ 295               		.loc 1 63 0
+ 296 014e 0895      		ret
+ 297               	.LVL22:
+ 298               	.L17:
+ 299               	.LBB44:
+  60:src/messages.c **** 			lMesPointer = (lMesPointer + 1) & (maxMessages - 1);
+ 300               		.loc 1 60 0
+ 301 0150 8091 0000 		lds r24,lMesPointer
+ 302 0154 9091 0000 		lds r25,lMesPointer+1
+ 303 0158 0196      		adiw r24,1
+ 304 015a 8F73      		andi r24,63
+ 305 015c 9927      		clr r25
+ 306 015e 9093 0000 		sts lMesPointer+1,r25
+ 307 0162 8093 0000 		sts lMesPointer,r24
+ 308               	.LVL23:
+ 309 0166 00C0      		rjmp .L18
+ 310               	.LBE44:
+ 311               		.cfi_endproc
+ 312               	.LFE17:
+ 314               	.global	setTimer
+ 316               	setTimer:
+ 317               	.LFB18:
+  64:src/messages.c **** 
+  65:src/messages.c **** // установить таймер
+  66:src/messages.c **** // пример вызова: setMsgTimer(MSG_LCD_REFRESH, 0, 50);
+  67:src/messages.c **** void setTimer(msg_num msg, msg_par par, uint16_t time) {
+ 318               		.loc 1 67 0
+ 319               		.cfi_startproc
+ 320               	.LVL24:
+ 321               	/* prologue: function */
+ 322               	/* frame size = 0 */
+ 323               	/* stack size = 0 */
+ 324               	.L__stack_usage = 0
+  68:src/messages.c **** 	uint8_t i, firstFree;
+  69:src/messages.c **** 	if (time == 0) {
+ 325               		.loc 1 69 0
+ 326 0168 4115      		cp r20,__zero_reg__
+ 327 016a 5105      		cpc r21,__zero_reg__
+ 328 016c 01F4      		brne .L21
+  70:src/messages.c **** 		sendMessage(msg, par);
+ 329               		.loc 1 70 0
+ 330 016e 00C0      		rjmp sendMessage
+ 331               	.LVL25:
+ 332               	.L21:
+ 333               	.LBB45:
+  71:src/messages.c **** 	} else {
+  72:src/messages.c **** 
+  73:src/messages.c **** 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 334               		.loc 1 73 0
+ 335 0170 AFB7      		in r26,__SREG__
+ 336               	.LVL26:
+ 337               	.LBB46:
+ 338               	.LBB47:
+  50:/usr/lib/avr/include/util/atomic.h ****     return 1;
+ 339               		.loc 2 50 0
+ 340               	/* #APP */
+ 341               	 ;  50 "/usr/lib/avr/include/util/atomic.h" 1
+ 342 0172 F894      		cli
+ 343               	 ;  0 "" 2
+ 344               	/* #NOAPP */
+ 345               	.LBE47:
+ 346               	.LBE46:
+  74:src/messages.c **** 			firstFree = numTimers + 1;
+  75:src/messages.c **** 
+  76:src/messages.c **** 			for (i = 0; i <= numTimers; i++) { // ищем установленный таймер
+  77:src/messages.c **** 				if (lTimer[i].msg == 0) {
+ 347               		.loc 1 77 0
+ 348 0174 27E0      		ldi r18,lo8(7)
+ 349               	.LVL27:
+  74:src/messages.c **** 			firstFree = numTimers + 1;
+ 350               		.loc 1 74 0
+ 351 0176 9091 0000 		lds r25,numTimers
+ 352 017a 9F5F      		subi r25,lo8(-(1))
+ 353               	.LVL28:
+  76:src/messages.c **** 				if (lTimer[i].msg == 0) {
+ 354               		.loc 1 76 0
+ 355 017c 30E0      		ldi r19,0
+ 356               	.LVL29:
+ 357               	.L23:
+  76:src/messages.c **** 				if (lTimer[i].msg == 0) {
+ 358               		.loc 1 76 0 is_stmt 0 discriminator 1
+ 359 017e E091 0000 		lds r30,numTimers
+ 360 0182 E317      		cp r30,r19
+ 361 0184 00F0      		brlo .L29
+ 362               		.loc 1 77 0 is_stmt 1
+ 363 0186 239F      		mul r18,r19
+ 364 0188 F001      		movw r30,r0
+ 365 018a 1124      		clr __zero_reg__
+ 366 018c E050      		subi r30,lo8(-(lTimer))
+ 367 018e F040      		sbci r31,hi8(-(lTimer))
+ 368 0190 B081      		ld r27,Z
+ 369 0192 BB23      		tst r27
+ 370 0194 01F0      		breq .L28
+  78:src/messages.c **** 					firstFree = i;
+  79:src/messages.c **** 				} else { // если нашли - обновляем время
+  80:src/messages.c **** 					//if ((lTimer[i].msg == msg) && (lTimer[i].par == par)) {
+  81:src/messages.c **** 					if (lTimer[i].msg == msg) {
+ 371               		.loc 1 81 0
+ 372 0196 B081      		ld r27,Z
+ 373 0198 8B13      		cpse r24,r27
+ 374 019a 00C0      		rjmp .L24
+  82:src/messages.c **** 						lTimer[i].time = time;
+ 375               		.loc 1 82 0
+ 376 019c 5483      		std Z+4,r21
+ 377 019e 4383      		std Z+3,r20
+  83:src/messages.c **** 						lTimer[i].timeOrigin = time;
+ 378               		.loc 1 83 0
+ 379 01a0 5683      		std Z+6,r21
+ 380 01a2 4583      		std Z+5,r20
+  84:src/messages.c **** 						lTimer[i].par = par;
+ 381               		.loc 1 84 0
+ 382 01a4 7283      		std Z+2,r23
+ 383 01a6 6183      		std Z+1,r22
+ 384               	.LVL30:
+ 385 01a8 00C0      		rjmp .L25
+ 386               	.LVL31:
+ 387               	.L28:
+ 388 01aa 932F      		mov r25,r19
+ 389               	.LVL32:
+ 390               	.L24:
+  76:src/messages.c **** 				if (lTimer[i].msg == 0) {
+ 391               		.loc 1 76 0 discriminator 2
+ 392 01ac 3F5F      		subi r19,lo8(-(1))
+ 393               	.LVL33:
+ 394 01ae 00C0      		rjmp .L23
+ 395               	.L29:
+  85:src/messages.c **** 						firstFree = maxTimers + 1;
+  86:src/messages.c **** 						break;
+  87:src/messages.c **** 					}
+  88:src/messages.c **** 				}
+  89:src/messages.c **** 			}
+  90:src/messages.c **** 			if (firstFree <= maxTimers) { // иначе - просто добавляем новый
+ 396               		.loc 1 90 0
+ 397 01b0 9131      		cpi r25,lo8(17)
+ 398 01b2 00F4      		brsh .L25
+  91:src/messages.c **** 				lTimer[firstFree].msg = msg;
+ 399               		.loc 1 91 0
+ 400 01b4 299F      		mul r18,r25
+ 401 01b6 9001      		movw r18,r0
+ 402 01b8 1124      		clr __zero_reg__
+ 403 01ba 2050      		subi r18,lo8(-(lTimer))
+ 404 01bc 3040      		sbci r19,hi8(-(lTimer))
+ 405 01be F901      		movw r30,r18
+ 406 01c0 8193      		st Z+,r24
+  92:src/messages.c **** 				lTimer[firstFree].par = par;
+ 407               		.loc 1 92 0
+ 408 01c2 7183      		std Z+1,r23
+ 409 01c4 6083      		st Z,r22
+  93:src/messages.c **** 				lTimer[firstFree].time = time;
+ 410               		.loc 1 93 0
+ 411 01c6 F901      		movw r30,r18
+ 412 01c8 3396      		adiw r30,3
+ 413 01ca 5183      		std Z+1,r21
+ 414 01cc 4083      		st Z,r20
+  94:src/messages.c **** 				lTimer[firstFree].timeOrigin = time;
+ 415               		.loc 1 94 0
+ 416 01ce 3296      		adiw r30,2
+ 417 01d0 5183      		std Z+1,r21
+ 418 01d2 4083      		st Z,r20
+  95:src/messages.c **** 
+  96:src/messages.c **** 				if (firstFree > numTimers)
+ 419               		.loc 1 96 0
+ 420 01d4 8091 0000 		lds r24,numTimers
+ 421               	.LVL34:
+ 422 01d8 8917      		cp r24,r25
+ 423 01da 00F4      		brsh .L25
+  97:src/messages.c **** 					numTimers = firstFree;
+ 424               		.loc 1 97 0
+ 425 01dc 9093 0000 		sts numTimers,r25
+ 426               	.LVL35:
+ 427               	.L25:
+ 428               	.LBB48:
+ 429               	.LBB49:
+  70:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 430               		.loc 2 70 0 discriminator 1
+ 431 01e0 AFBF      		out __SREG__,r26
+ 432               		.loc 2 71 0 discriminator 1
+ 433               	.LVL36:
+ 434 01e2 0895      		ret
+ 435               	.LBE49:
+ 436               	.LBE48:
+ 437               	.LBE45:
+ 438               		.cfi_endproc
+ 439               	.LFE18:
+ 441               	.global	killTimer
+ 443               	killTimer:
+ 444               	.LFB19:
+  98:src/messages.c **** 			}
+  99:src/messages.c **** 		}
+ 100:src/messages.c **** 	}
+ 101:src/messages.c **** }
+ 102:src/messages.c **** 
+ 103:src/messages.c **** // убить таймер
+ 104:src/messages.c **** // особенность - убивает все установленные таймеры на д
+ 105:src/messages.c **** // не зависимо от параметра события
+ 106:src/messages.c **** void killTimer(msg_num msg) {
+ 445               		.loc 1 106 0
+ 446               		.cfi_startproc
+ 447               	.LVL37:
+ 448               	/* prologue: function */
+ 449               	/* frame size = 0 */
+ 450               	/* stack size = 0 */
+ 451               	.L__stack_usage = 0
+ 452               	.LBB50:
+ 107:src/messages.c **** 	uint8_t i;
+ 108:src/messages.c **** 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 453               		.loc 1 108 0
+ 454 01e4 9FB7      		in r25,__SREG__
+ 455               	.LVL38:
+ 456               	.LBB51:
+ 457               	.LBB52:
+  50:/usr/lib/avr/include/util/atomic.h ****     return 1;
+ 458               		.loc 2 50 0
+ 459               	/* #APP */
+ 460               	 ;  50 "/usr/lib/avr/include/util/atomic.h" 1
+ 461 01e6 F894      		cli
+ 462               	 ;  0 "" 2
+ 463               	.LVL39:
+ 464               	/* #NOAPP */
+ 465 01e8 20E0      		ldi r18,0
+ 466 01ea 30E0      		ldi r19,0
+ 467               	.LBE52:
+ 468               	.LBE51:
+ 109:src/messages.c **** 		for (i = 0; i < maxTimers; i++) {
+ 110:src/messages.c **** 			if (lTimer[i].msg == msg) {
+ 469               		.loc 1 110 0
+ 470 01ec 47E0      		ldi r20,lo8(7)
+ 471               	.LVL40:
+ 472               	.L32:
+ 473 01ee 429F      		mul r20,r18
+ 474 01f0 F001      		movw r30,r0
+ 475 01f2 439F      		mul r20,r19
+ 476 01f4 F00D      		add r31,r0
+ 477 01f6 1124      		clr __zero_reg__
+ 478 01f8 E050      		subi r30,lo8(-(lTimer))
+ 479 01fa F040      		sbci r31,hi8(-(lTimer))
+ 480 01fc 5081      		ld r21,Z
+ 481 01fe 5813      		cpse r21,r24
+ 482 0200 00C0      		rjmp .L31
+ 111:src/messages.c **** 				lTimer[i].msg = 0;
+ 483               		.loc 1 111 0
+ 484 0202 1082      		st Z,__zero_reg__
+ 485               	.L31:
+ 486               	.LVL41:
+ 487 0204 2F5F      		subi r18,-1
+ 488 0206 3F4F      		sbci r19,-1
+ 489               	.LVL42:
+ 109:src/messages.c **** 		for (i = 0; i < maxTimers; i++) {
+ 490               		.loc 1 109 0 discriminator 2
+ 491 0208 2031      		cpi r18,16
+ 492 020a 3105      		cpc r19,__zero_reg__
+ 493 020c 01F4      		brne .L32
+ 112:src/messages.c **** 			}
+ 113:src/messages.c **** 		}
+ 114:src/messages.c **** 		while ((lTimer[numTimers].msg == 0) && (numTimers > 0))
+ 494               		.loc 1 114 0
+ 495 020e 27E0      		ldi r18,lo8(7)
+ 496               	.LVL43:
+ 497               	.L33:
+ 498 0210 E091 0000 		lds r30,numTimers
+ 499 0214 2E9F      		mul r18,r30
+ 500 0216 F001      		movw r30,r0
+ 501 0218 1124      		clr __zero_reg__
+ 502 021a E050      		subi r30,lo8(-(lTimer))
+ 503 021c F040      		sbci r31,hi8(-(lTimer))
+ 504 021e 8081      		ld r24,Z
+ 505 0220 8111      		cpse r24,__zero_reg__
+ 506 0222 00C0      		rjmp .L34
+ 507               		.loc 1 114 0 is_stmt 0 discriminator 1
+ 508 0224 8091 0000 		lds r24,numTimers
+ 509 0228 8823      		tst r24
+ 510 022a 01F0      		breq .L34
+ 115:src/messages.c **** 			numTimers--;
+ 511               		.loc 1 115 0 is_stmt 1
+ 512 022c 8091 0000 		lds r24,numTimers
+ 513 0230 8150      		subi r24,lo8(-(-1))
+ 514 0232 8093 0000 		sts numTimers,r24
+ 515 0236 00C0      		rjmp .L33
+ 516               	.L34:
+ 517               	.LVL44:
+ 518               	.LBB53:
+ 519               	.LBB54:
+  70:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 520               		.loc 2 70 0 discriminator 3
+ 521 0238 9FBF      		out __SREG__,r25
+ 522               		.loc 2 71 0 discriminator 3
+ 523               	.LVL45:
+ 524 023a 0895      		ret
+ 525               	.LBE54:
+ 526               	.LBE53:
+ 527               	.LBE50:
+ 528               		.cfi_endproc
+ 529               	.LFE19:
+ 531               	.global	dispatchTimer
+ 533               	dispatchTimer:
+ 534               	.LFB20:
+ 116:src/messages.c **** 	}
+ 117:src/messages.c **** }
+ 118:src/messages.c **** 
+ 119:src/messages.c **** // диспетчер таймеров
+ 120:src/messages.c **** void dispatchTimer(void) {
+ 535               		.loc 1 120 0
+ 536               		.cfi_startproc
+ 537 023c 0F93      		push r16
+ 538               	.LCFI0:
+ 539               		.cfi_def_cfa_offset 3
+ 540               		.cfi_offset 16, -2
+ 541 023e 1F93      		push r17
+ 542               	.LCFI1:
+ 543               		.cfi_def_cfa_offset 4
+ 544               		.cfi_offset 17, -3
+ 545 0240 CF93      		push r28
+ 546               	.LCFI2:
+ 547               		.cfi_def_cfa_offset 5
+ 548               		.cfi_offset 28, -4
+ 549 0242 DF93      		push r29
+ 550               	.LCFI3:
+ 551               		.cfi_def_cfa_offset 6
+ 552               		.cfi_offset 29, -5
+ 553               	/* prologue: function */
+ 554               	/* frame size = 0 */
+ 555               	/* stack size = 4 */
+ 556               	.L__stack_usage = 4
+ 557               	.LVL46:
+ 121:src/messages.c **** 	uint8_t i;
+ 122:src/messages.c **** 
+ 123:src/messages.c **** 	for (i = 0; i <= numTimers; i++) {
+ 558               		.loc 1 123 0
+ 559 0244 10E0      		ldi r17,0
+ 124:src/messages.c **** 		if (lTimer[i].msg == 0)
+ 560               		.loc 1 124 0
+ 561 0246 07E0      		ldi r16,lo8(7)
+ 562               	.LVL47:
+ 563               	.L38:
+ 123:src/messages.c **** 		if (lTimer[i].msg == 0)
+ 564               		.loc 1 123 0 discriminator 1
+ 565 0248 8091 0000 		lds r24,numTimers
+ 566 024c 8117      		cp r24,r17
+ 567 024e 00F0      		brlo .L46
+ 568               		.loc 1 124 0
+ 569 0250 019F      		mul r16,r17
+ 570 0252 E001      		movw r28,r0
+ 571 0254 1124      		clr __zero_reg__
+ 572 0256 C050      		subi r28,lo8(-(lTimer))
+ 573 0258 D040      		sbci r29,hi8(-(lTimer))
+ 574 025a 8881      		ld r24,Y
+ 575 025c 8823      		tst r24
+ 576 025e 01F0      		breq .L39
+ 125:src/messages.c **** 			continue;
+ 126:src/messages.c **** 
+ 127:src/messages.c **** 		if (lTimer[i].time > 0) { // если не пришло время
+ 577               		.loc 1 127 0
+ 578 0260 8B81      		ldd r24,Y+3
+ 579 0262 9C81      		ldd r25,Y+4
+ 580 0264 892B      		or r24,r25
+ 581 0266 01F0      		breq .L40
+ 128:src/messages.c **** 			lTimer[i].time--; // просто уменьшаем время
+ 582               		.loc 1 128 0
+ 583 0268 8B81      		ldd r24,Y+3
+ 584 026a 9C81      		ldd r25,Y+4
+ 585 026c 00C0      		rjmp .L45
+ 586               	.L40:
+ 129:src/messages.c **** 		} else {
+ 130:src/messages.c **** 			sendMessage(lTimer[i].msg, lTimer[i].par); // создаем событие
+ 587               		.loc 1 130 0
+ 588 026e 6981      		ldd r22,Y+1
+ 589 0270 7A81      		ldd r23,Y+2
+ 590 0272 8881      		ld r24,Y
+ 591 0274 00D0      		rcall sendMessage
+ 592               	.LVL48:
+ 131:src/messages.c **** 			lTimer[i].time = lTimer[i].timeOrigin - 1; // FIXED: лишний тик таймера (-1)
+ 593               		.loc 1 131 0
+ 594 0276 8D81      		ldd r24,Y+5
+ 595 0278 9E81      		ldd r25,Y+6
+ 596               	.L45:
+ 597 027a 0197      		sbiw r24,1
+ 598 027c 9C83      		std Y+4,r25
+ 599 027e 8B83      		std Y+3,r24
+ 600               	.L39:
+ 123:src/messages.c **** 		if (lTimer[i].msg == 0)
+ 601               		.loc 1 123 0 discriminator 2
+ 602 0280 1F5F      		subi r17,lo8(-(1))
+ 603               	.LVL49:
+ 604 0282 00C0      		rjmp .L38
+ 605               	.L46:
+ 606               	/* epilogue start */
+ 132:src/messages.c **** 		}
+ 133:src/messages.c **** 	}
+ 134:src/messages.c **** }
+ 607               		.loc 1 134 0
+ 608 0284 DF91      		pop r29
+ 609 0286 CF91      		pop r28
+ 610 0288 1F91      		pop r17
+ 611               	.LVL50:
+ 612 028a 0F91      		pop r16
+ 613 028c 0895      		ret
+ 614               		.cfi_endproc
+ 615               	.LFE20:
+ 617               	.global	initMessages
+ 619               	initMessages:
+ 620               	.LFB21:
+ 135:src/messages.c **** 
+ 136:src/messages.c **** void initMessages(void) {
+ 621               		.loc 1 136 0
+ 622               		.cfi_startproc
+ 623               	/* prologue: function */
+ 624               	/* frame size = 0 */
+ 625               	/* stack size = 0 */
+ 626               	.L__stack_usage = 0
+ 137:src/messages.c **** 	numHandlers     = 0;
+ 627               		.loc 1 137 0
+ 628 028e 1092 0000 		sts numHandlers,__zero_reg__
+ 138:src/messages.c **** 	numTimers       = 0;
+ 629               		.loc 1 138 0
+ 630 0292 1092 0000 		sts numTimers,__zero_reg__
+ 139:src/messages.c **** 	lMesPointer     = 0;
+ 631               		.loc 1 139 0
+ 632 0296 1092 0000 		sts lMesPointer+1,__zero_reg__
+ 633 029a 1092 0000 		sts lMesPointer,__zero_reg__
+ 140:src/messages.c **** 	hMesPointer     = 0;
+ 634               		.loc 1 140 0
+ 635 029e 1092 0000 		sts hMesPointer+1,__zero_reg__
+ 636 02a2 1092 0000 		sts hMesPointer,__zero_reg__
+ 141:src/messages.c **** 
+ 142:src/messages.c **** 	/* главный таймер */	
+ 143:src/messages.c ****         
+ 144:src/messages.c **** 	/** 
+ 145:src/messages.c ****          * ATMEGA8 16bit timer
+ 146:src/messages.c ****          * --------------------
+ 147:src/messages.c ****          * mode: режим подсчета импульсов (сброс при совпаден
+ 148:src/messages.c ****          * Mode WGM13   WGM12   WGM11   WGM10
+ 149:src/messages.c ****          * 4    0       1       0       0           CTC     OCR1A   Immediate   MAX
+ 150:src/messages.c ****          * 
+ 151:src/messages.c ****          * CS12     CS11    CS10        Description
+ 152:src/messages.c ****          * 0        1       1           clk I/O /64 (From prescaler)
+ 153:src/messages.c ****          * 
+ 154:src/messages.c ****          * 2486AA–AVR–02/2013 ATmega8/L datasheet p. 97-99
+ 155:src/messages.c ****          */
+ 156:src/messages.c **** 	TCCR1A = 0; // WGM11 = 0,  WGM10 = 0
+ 637               		.loc 1 156 0
+ 638 02a6 1FBC      		out 0x2f,__zero_reg__
+ 157:src/messages.c ****         TCCR1B = _BV(WGM12) | _BV(CS11) | _BV(CS10); // WGM13 = 0, CS12 = 0
+ 639               		.loc 1 157 0
+ 640 02a8 8BE0      		ldi r24,lo8(11)
+ 641 02aa 8EBD      		out 0x2e,r24
+ 158:src/messages.c **** 
+ 159:src/messages.c ****  
+ 160:src/messages.c **** 	/** регистр сравнения A
+ 161:src/messages.c **** 	 * --------------------
+ 162:src/messages.c **** 	 */
+ 163:src/messages.c **** 	OCR1A  = F_CPU / 62500UL; 
+ 642               		.loc 1 163 0
+ 643 02ac 80E8      		ldi r24,lo8(-128)
+ 644 02ae 90E0      		ldi r25,0
+ 645 02b0 9BBD      		out 0x2a+1,r25
+ 646 02b2 8ABD      		out 0x2a,r24
+ 164:src/messages.c **** 
+ 165:src/messages.c **** 	/** enable interrupt: при совпадении с A
+ 166:src/messages.c **** 	 * -------------------------------------
+ 167:src/messages.c **** 	 */	
+ 168:src/messages.c **** 	TIMSK |=_BV(OCIE1A);
+ 647               		.loc 1 168 0
+ 648 02b4 89B7      		in r24,0x39
+ 649 02b6 8061      		ori r24,lo8(16)
+ 650 02b8 89BF      		out 0x39,r24
+ 651 02ba 0895      		ret
+ 652               		.cfi_endproc
+ 653               	.LFE21:
+ 655               	.global	__vector_6
+ 657               	__vector_6:
+ 658               	.LFB22:
+ 169:src/messages.c **** }
+ 170:src/messages.c **** 
+ 171:src/messages.c **** /**
+ 172:src/messages.c ****  * RTOS Timer Handler
+ 173:src/messages.c ****  */
+ 174:src/messages.c **** ISR(TIMER1_COMPA_vect)
+ 175:src/messages.c **** {
+ 659               		.loc 1 175 0
+ 660               		.cfi_startproc
+ 661 02bc 1F92      		push r1
+ 662               	.LCFI4:
+ 663               		.cfi_def_cfa_offset 3
+ 664               		.cfi_offset 1, -2
+ 665 02be 0F92      		push r0
+ 666               	.LCFI5:
+ 667               		.cfi_def_cfa_offset 4
+ 668               		.cfi_offset 0, -3
+ 669 02c0 0FB6      		in r0,__SREG__
+ 670 02c2 0F92      		push r0
+ 671 02c4 1124      		clr __zero_reg__
+ 672 02c6 2F93      		push r18
+ 673               	.LCFI6:
+ 674               		.cfi_def_cfa_offset 5
+ 675               		.cfi_offset 18, -4
+ 676 02c8 3F93      		push r19
+ 677               	.LCFI7:
+ 678               		.cfi_def_cfa_offset 6
+ 679               		.cfi_offset 19, -5
+ 680 02ca 4F93      		push r20
+ 681               	.LCFI8:
+ 682               		.cfi_def_cfa_offset 7
+ 683               		.cfi_offset 20, -6
+ 684 02cc 5F93      		push r21
+ 685               	.LCFI9:
+ 686               		.cfi_def_cfa_offset 8
+ 687               		.cfi_offset 21, -7
+ 688 02ce 6F93      		push r22
+ 689               	.LCFI10:
+ 690               		.cfi_def_cfa_offset 9
+ 691               		.cfi_offset 22, -8
+ 692 02d0 7F93      		push r23
+ 693               	.LCFI11:
+ 694               		.cfi_def_cfa_offset 10
+ 695               		.cfi_offset 23, -9
+ 696 02d2 8F93      		push r24
+ 697               	.LCFI12:
+ 698               		.cfi_def_cfa_offset 11
+ 699               		.cfi_offset 24, -10
+ 700 02d4 9F93      		push r25
+ 701               	.LCFI13:
+ 702               		.cfi_def_cfa_offset 12
+ 703               		.cfi_offset 25, -11
+ 704 02d6 AF93      		push r26
+ 705               	.LCFI14:
+ 706               		.cfi_def_cfa_offset 13
+ 707               		.cfi_offset 26, -12
+ 708 02d8 BF93      		push r27
+ 709               	.LCFI15:
+ 710               		.cfi_def_cfa_offset 14
+ 711               		.cfi_offset 27, -13
+ 712 02da EF93      		push r30
+ 713               	.LCFI16:
+ 714               		.cfi_def_cfa_offset 15
+ 715               		.cfi_offset 30, -14
+ 716 02dc FF93      		push r31
+ 717               	.LCFI17:
+ 718               		.cfi_def_cfa_offset 16
+ 719               		.cfi_offset 31, -15
+ 720               	/* prologue: Signal */
+ 721               	/* frame size = 0 */
+ 722               	/* stack size = 15 */
+ 723               	.L__stack_usage = 15
+ 176:src/messages.c **** 	dispatchTimer(); // а вот и диспетчер
+ 724               		.loc 1 176 0
+ 725 02de 00D0      		rcall dispatchTimer
+ 726               	.LVL51:
+ 727               	/* epilogue start */
+ 177:src/messages.c **** }
+ 728               		.loc 1 177 0
+ 729 02e0 FF91      		pop r31
+ 730 02e2 EF91      		pop r30
+ 731 02e4 BF91      		pop r27
+ 732 02e6 AF91      		pop r26
+ 733 02e8 9F91      		pop r25
+ 734 02ea 8F91      		pop r24
+ 735 02ec 7F91      		pop r23
+ 736 02ee 6F91      		pop r22
+ 737 02f0 5F91      		pop r21
+ 738 02f2 4F91      		pop r20
+ 739 02f4 3F91      		pop r19
+ 740 02f6 2F91      		pop r18
+ 741 02f8 0F90      		pop r0
+ 742 02fa 0FBE      		out __SREG__,r0
+ 743 02fc 0F90      		pop r0
+ 744 02fe 1F90      		pop r1
+ 745 0300 1895      		reti
+ 746               		.cfi_endproc
+ 747               	.LFE22:
+ 749               		.comm	hMesPointer,2,1
+ 750               		.comm	lMesPointer,2,1
+ 751               		.comm	lMessage,192,1
+ 752               		.comm	numTimers,1,1
+ 753               		.comm	numHandlers,1,1
+ 754               		.comm	lHandler,96,1
+ 755               		.comm	lTimer,112,1
+ 756               	.Letext0:
+ 757               		.file 3 "/usr/lib/avr/include/stdint.h"
+ 758               		.file 4 "./include/messages.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 messages.c
+     /tmp/cco4RtZ4.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cco4RtZ4.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cco4RtZ4.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cco4RtZ4.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cco4RtZ4.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cco4RtZ4.s:12     .text:0000000000000000 setHandler
+                            *COM*:0000000000000001 numHandlers
+                            *COM*:0000000000000060 lHandler
+     /tmp/cco4RtZ4.s:89     .text:000000000000004c killHandler
+     /tmp/cco4RtZ4.s:215    .text:00000000000000e4 sendMessage
+                            *COM*:0000000000000002 hMesPointer
+                            *COM*:00000000000000c0 lMessage
+                            *COM*:0000000000000002 lMesPointer
+     /tmp/cco4RtZ4.s:316    .text:0000000000000168 setTimer
+                            *COM*:0000000000000001 numTimers
+                            *COM*:0000000000000070 lTimer
+     /tmp/cco4RtZ4.s:443    .text:00000000000001e4 killTimer
+     /tmp/cco4RtZ4.s:533    .text:000000000000023c dispatchTimer
+     /tmp/cco4RtZ4.s:619    .text:000000000000028e initMessages
+     /tmp/cco4RtZ4.s:657    .text:00000000000002bc __vector_6
+
+UNDEFINED SYMBOLS
+__do_clear_bss

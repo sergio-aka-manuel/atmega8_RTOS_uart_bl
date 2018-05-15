@@ -1,0 +1,8 @@
+*.eep
+*.hex
+*.lss
+*.map
+*.sym
+*.bin
+/.dep/
+/nbproject/

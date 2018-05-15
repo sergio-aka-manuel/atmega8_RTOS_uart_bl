@@ -1,0 +1,526 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	led1_ControlTask
+  12               	led1_ControlTask:
+  13               	.LFB17:
+  14               		.file 1 "main.c"
+   1:main.c        **** /*
+   2:main.c        ****  * To change this license header, choose License Headers in Project Properties.
+   3:main.c        ****  * To change this template file, choose Tools | Templates
+   4:main.c        ****  * and open the template in the editor.
+   5:main.c        ****  */
+   6:main.c        **** 
+   7:main.c        **** /* 
+   8:main.c        ****  * File:   main.c
+   9:main.c        ****  * Author: sa100
+  10:main.c        ****  *
+  11:main.c        ****  * Created on May 14, 2018, 11:23 AM
+  12:main.c        ****  */
+  13:main.c        **** 
+  14:main.c        **** #include "messages_disp.h"      /* RTOS: dispatcher */
+  15:main.c        **** #include "main.h"
+  16:main.c        **** 
+  17:main.c        **** 
+  18:main.c        **** 
+  19:main.c        **** //-----------------------------------------------------------------------------------
+  20:main.c        **** /**
+  21:main.c        ****  * MSG_DEFAULT_TASK Handler
+  22:main.c        ****  */
+  23:main.c        **** uint8_t defaultTask(msg_par par)
+  24:main.c        **** {
+  25:main.c        ****  
+  26:main.c        ****     return 1;
+  27:main.c        **** }
+  28:main.c        **** 
+  29:main.c        **** /**
+  30:main.c        ****  * MSG_LED1_CONTROL Handler
+  31:main.c        ****  */
+  32:main.c        **** uint8_t led1_ControlTask(msg_par par)
+  33:main.c        **** {
+  15               		.loc 1 33 0
+  16               		.cfi_startproc
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  34:main.c        ****     PORTC ^= 0x20;
+  22               		.loc 1 34 0
+  23 0000 95B3      		in r25,0x15
+  24 0002 80E2      		ldi r24,lo8(32)
+  25               	.LVL1:
+  26 0004 8927      		eor r24,r25
+  27 0006 85BB      		out 0x15,r24
+  35:main.c        ****     
+  36:main.c        ****     return 1;
+  37:main.c        **** }
+  28               		.loc 1 37 0
+  29 0008 81E0      		ldi r24,lo8(1)
+  30 000a 0895      		ret
+  31               		.cfi_endproc
+  32               	.LFE17:
+  34               	.global	led2_ControlTask
+  36               	led2_ControlTask:
+  37               	.LFB18:
+  38:main.c        **** 
+  39:main.c        **** /**
+  40:main.c        ****  * MSG_LED2_CONTROL Handler
+  41:main.c        ****  */
+  42:main.c        **** uint8_t led2_ControlTask(msg_par par)
+  43:main.c        **** {
+  38               		.loc 1 43 0
+  39               		.cfi_startproc
+  40               	.LVL2:
+  41               	/* prologue: function */
+  42               	/* frame size = 0 */
+  43               	/* stack size = 0 */
+  44               	.L__stack_usage = 0
+  44:main.c        ****     PORTC ^= 0x10;
+  45               		.loc 1 44 0
+  46 000c 95B3      		in r25,0x15
+  47 000e 80E1      		ldi r24,lo8(16)
+  48               	.LVL3:
+  49 0010 8927      		eor r24,r25
+  50 0012 85BB      		out 0x15,r24
+  45:main.c        ****     
+  46:main.c        ****     return 1;
+  47:main.c        **** }
+  51               		.loc 1 47 0
+  52 0014 81E0      		ldi r24,lo8(1)
+  53 0016 0895      		ret
+  54               		.cfi_endproc
+  55               	.LFE18:
+  57               	.global	led3_ControlTask
+  59               	led3_ControlTask:
+  60               	.LFB19:
+  48:main.c        **** 
+  49:main.c        **** /**
+  50:main.c        ****  * MSG_LED3_CONTROL Handler
+  51:main.c        ****  */
+  52:main.c        **** uint8_t led3_ControlTask(msg_par par)
+  53:main.c        **** {
+  61               		.loc 1 53 0
+  62               		.cfi_startproc
+  63               	.LVL4:
+  64               	/* prologue: function */
+  65               	/* frame size = 0 */
+  66               	/* stack size = 0 */
+  67               	.L__stack_usage = 0
+  54:main.c        ****     PORTC ^= 0x08;
+  68               		.loc 1 54 0
+  69 0018 95B3      		in r25,0x15
+  70 001a 88E0      		ldi r24,lo8(8)
+  71               	.LVL5:
+  72 001c 8927      		eor r24,r25
+  73 001e 85BB      		out 0x15,r24
+  55:main.c        ****     
+  56:main.c        ****     return 1;
+  57:main.c        **** }
+  74               		.loc 1 57 0
+  75 0020 81E0      		ldi r24,lo8(1)
+  76 0022 0895      		ret
+  77               		.cfi_endproc
+  78               	.LFE19:
+  80               	.global	defaultTask
+  82               	defaultTask:
+  83               	.LFB16:
+  24:main.c        ****  
+  84               		.loc 1 24 0
+  85               		.cfi_startproc
+  86               	.LVL6:
+  87               	/* prologue: function */
+  88               	/* frame size = 0 */
+  89               	/* stack size = 0 */
+  90               	.L__stack_usage = 0
+  27:main.c        **** 
+  91               		.loc 1 27 0
+  92 0024 81E0      		ldi r24,lo8(1)
+  93               	.LVL7:
+  94 0026 0895      		ret
+  95               		.cfi_endproc
+  96               	.LFE16:
+  98               		.section	.text.startup,"ax",@progbits
+  99               	.global	main
+ 101               	main:
+ 102               	.LFB20:
+  58:main.c        **** 
+  59:main.c        **** int main(void) {
+ 103               		.loc 1 59 0
+ 104               		.cfi_startproc
+ 105               	/* prologue: function */
+ 106               	/* frame size = 0 */
+ 107               	/* stack size = 0 */
+ 108               	.L__stack_usage = 0
+  60:main.c        ****     /**[1] 11.9.2 WDTCSR – Watchdog Timer Control Register
+  61:main.c        ****      * WDCE: Watchdog Change Enable
+  62:main.c        ****      *          This bit is used in timed sequences for changing WDE and prescaler bits.
+  63:main.c        ****      *          To clear the WDE bit, and/or changethe prescaler bits, WDCE must be set.
+  64:main.c        ****      *          Once written to one, hardware will clear WDCE after four clock cycles.
+  65:main.c        ****      * WDE: Watchdog System Reset Enable
+  66:main.c        ****      *          WDE is overridden by WDRF in MCUSR. This means that WDE is always set when WDRF is 
+  67:main.c        ****      *          To clear WDE, WDRF must be cleared first. This feature ensures multiple resets duri
+  68:main.c        ****      *          conditions causing failure, and a safe start-up after the failure.
+  69:main.c        ****      * WDP[3:0]: Watchdog Timer Prescaler 3, 2, 1 and 0
+  70:main.c        ****      *          The WDP[3:0] bits determine the Watchdog Timer prescaling when the Watchdog
+  71:main.c        ****      *          Timer is running. The different prescaling values and their corresponding
+  72:main.c        ****      *          time-out periods are shown in Table:
+  73:main.c        ****      *
+  74:main.c        ****      *          WDP3    WDP2    WDP1    WDP0    WDT                     Time-out
+  75:main.c        ****      *          0       0       0       0       2K (2048) cycles        16ms
+  76:main.c        ****      *          0       0       0       1       4K (4096)               32ms
+  77:main.c        ****      *          0       0       1       0       8K (8192)               64ms
+  78:main.c        ****      *          0       0       1       1       16K (16384)             0.125s
+  79:main.c        ****      *          0       1       0       0       32K (32768)             0.250s
+  80:main.c        ****      *          0       1       0       1       64K (65536)             0.500s
+  81:main.c        ****      *          0       1       1       0       128K (131072)           1.0 s
+  82:main.c        ****      *          0       1       1       1       256K (262144)           2.0 s
+  83:main.c        ****      *          1       0       0       0       512K (524288)           4.0 s
+  84:main.c        ****      *          1       0       0       1       1024K (1048576)         8.0 s
+  85:main.c        ****      */
+  86:main.c        **** 
+  87:main.c        ****     //WDTCSR = _BV(WDE) | _BV(WDCE);
+  88:main.c        ****     //WDTCSR = _BV(WDE) | (0x00) /* ~15ms */;
+  89:main.c        **** 
+  90:main.c        ****     /* GPIO: init */
+  91:main.c        ****     //DDRB |= 0xFF;
+  92:main.c        **** 
+  93:main.c        ****     PORTC &= ~(0x38);    
+ 109               		.loc 1 93 0
+ 110 0000 85B3      		in r24,0x15
+ 111 0002 877C      		andi r24,lo8(-57)
+ 112 0004 85BB      		out 0x15,r24
+  94:main.c        ****     DDRC |= 0x38;
+ 113               		.loc 1 94 0
+ 114 0006 84B3      		in r24,0x14
+ 115 0008 8863      		ori r24,lo8(56)
+ 116 000a 84BB      		out 0x14,r24
+  95:main.c        **** 
+  96:main.c        **** //
+  97:main.c        **** //    while (1) {
+  98:main.c        **** //        PORTC |= 0x20; 
+  99:main.c        **** //        PORTC &= ~0x10;
+ 100:main.c        **** //        PORTB |= 0x80;
+ 101:main.c        **** //        _delay_ms(1);
+ 102:main.c        **** //
+ 103:main.c        **** //        PORTC &= ~0x20;
+ 104:main.c        **** //        PORTC |= 0x10;
+ 105:main.c        **** //        PORTB &= ~0x80;
+ 106:main.c        **** //        _delay_ms(1);
+ 107:main.c        **** //    }
+ 108:main.c        ****     
+ 109:main.c        ****     
+ 110:main.c        ****     /* RTOS: init */
+ 111:main.c        ****     initMessages();
+ 117               		.loc 1 111 0
+ 118 000c 00D0      		rcall initMessages
+ 119               	.LVL8:
+ 112:main.c        **** 
+ 113:main.c        ****     /* first task */
+ 114:main.c        ****     setHandler(MSG_LED1_CONTROL, &led1_ControlTask);
+ 120               		.loc 1 114 0
+ 121 000e 60E0      		ldi r22,lo8(gs(led1_ControlTask))
+ 122 0010 70E0      		ldi r23,hi8(gs(led1_ControlTask))
+ 123 0012 84E0      		ldi r24,lo8(4)
+ 124 0014 00D0      		rcall setHandler
+ 125               	.LVL9:
+ 115:main.c        ****     setTimer(MSG_LED1_CONTROL, 0, 100/*ms*/);
+ 126               		.loc 1 115 0
+ 127 0016 44E6      		ldi r20,lo8(100)
+ 128 0018 50E0      		ldi r21,0
+ 129 001a 60E0      		ldi r22,0
+ 130 001c 70E0      		ldi r23,0
+ 131 001e 84E0      		ldi r24,lo8(4)
+ 132 0020 00D0      		rcall setTimer
+ 133               	.LVL10:
+ 116:main.c        **** 
+ 117:main.c        ****     /* second task */
+ 118:main.c        ****     setHandler(MSG_LED2_CONTROL, &led2_ControlTask);
+ 134               		.loc 1 118 0
+ 135 0022 60E0      		ldi r22,lo8(gs(led2_ControlTask))
+ 136 0024 70E0      		ldi r23,hi8(gs(led2_ControlTask))
+ 137 0026 85E0      		ldi r24,lo8(5)
+ 138 0028 00D0      		rcall setHandler
+ 139               	.LVL11:
+ 119:main.c        ****     setTimer(MSG_LED2_CONTROL, 0, 300/*ms*/);
+ 140               		.loc 1 119 0
+ 141 002a 4CE2      		ldi r20,lo8(44)
+ 142 002c 51E0      		ldi r21,lo8(1)
+ 143 002e 60E0      		ldi r22,0
+ 144 0030 70E0      		ldi r23,0
+ 145 0032 85E0      		ldi r24,lo8(5)
+ 146 0034 00D0      		rcall setTimer
+ 147               	.LVL12:
+ 120:main.c        ****     
+ 121:main.c        ****     /* third task */
+ 122:main.c        ****     setHandler(MSG_LED3_CONTROL, &led3_ControlTask);
+ 148               		.loc 1 122 0
+ 149 0036 60E0      		ldi r22,lo8(gs(led3_ControlTask))
+ 150 0038 70E0      		ldi r23,hi8(gs(led3_ControlTask))
+ 151 003a 86E0      		ldi r24,lo8(6)
+ 152 003c 00D0      		rcall setHandler
+ 153               	.LVL13:
+ 123:main.c        ****     setTimer(MSG_LED3_CONTROL, 0, 700/*ms*/);
+ 154               		.loc 1 123 0
+ 155 003e 4CEB      		ldi r20,lo8(-68)
+ 156 0040 52E0      		ldi r21,lo8(2)
+ 157 0042 60E0      		ldi r22,0
+ 158 0044 70E0      		ldi r23,0
+ 159 0046 86E0      		ldi r24,lo8(6)
+ 160 0048 00D0      		rcall setTimer
+ 161               	.LVL14:
+ 124:main.c        **** 
+ 125:main.c        ****     /* enable interrupts */
+ 126:main.c        ****     sei();
+ 162               		.loc 1 126 0
+ 163               	/* #APP */
+ 164               	 ;  126 "main.c" 1
+ 165 004a 7894      		sei
+ 166               	 ;  0 "" 2
+ 167               	/* #NOAPP */
+ 168               	.L7:
+ 169               	.LBB12:
+ 170               	.LBB13:
+ 171               		.file 2 "./include/messages_disp.h"
+   1:./include/messages_disp.h **** #pragma once
+   2:./include/messages_disp.h **** 
+   3:./include/messages_disp.h **** #include <util/atomic.h>
+   4:./include/messages_disp.h **** #include "messages.h"
+   5:./include/messages_disp.h **** 
+   6:./include/messages_disp.h **** // обработка очереди сообщений
+   7:./include/messages_disp.h **** inline void __attribute__((always_inline)) dispatchMessage(void) {
+   8:./include/messages_disp.h **** 	int8_t i;
+   9:./include/messages_disp.h **** 	uint8_t res;
+  10:./include/messages_disp.h **** 	msg_num msg;
+  11:./include/messages_disp.h **** 	msg_par par;
+  12:./include/messages_disp.h **** 
+  13:./include/messages_disp.h **** 	if (hMesPointer == lMesPointer) { // если пустая очередь - возврат
+ 172               		.loc 2 13 0 discriminator 1
+ 173 004c 2091 0000 		lds r18,hMesPointer
+ 174 0050 3091 0000 		lds r19,hMesPointer+1
+ 175 0054 8091 0000 		lds r24,lMesPointer
+ 176 0058 9091 0000 		lds r25,lMesPointer+1
+ 177 005c 2817      		cp r18,r24
+ 178 005e 3907      		cpc r19,r25
+ 179 0060 01F0      		breq .L7
+ 180               	.LBB14:
+  14:./include/messages_disp.h **** 		return;
+  15:./include/messages_disp.h **** 	}
+  16:./include/messages_disp.h **** 
+  17:./include/messages_disp.h **** 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+ 181               		.loc 2 17 0
+ 182 0062 2FB7      		in r18,__SREG__
+ 183               	.LVL15:
+ 184               	.LBB15:
+ 185               	.LBB16:
+ 186               		.file 3 "/usr/lib/avr/include/util/atomic.h"
+   1:/usr/lib/avr/include/util/atomic.h **** /* Copyright (c) 2007 Dean Camera
+   2:/usr/lib/avr/include/util/atomic.h ****    All rights reserved.
+   3:/usr/lib/avr/include/util/atomic.h **** 
+   4:/usr/lib/avr/include/util/atomic.h ****    Redistribution and use in source and binary forms, with or without
+   5:/usr/lib/avr/include/util/atomic.h ****    modification, are permitted provided that the following conditions are met:
+   6:/usr/lib/avr/include/util/atomic.h **** 
+   7:/usr/lib/avr/include/util/atomic.h ****    * Redistributions of source code must retain the above copyright
+   8:/usr/lib/avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer.
+   9:/usr/lib/avr/include/util/atomic.h **** 
+  10:/usr/lib/avr/include/util/atomic.h ****    * Redistributions in binary form must reproduce the above copyright
+  11:/usr/lib/avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer in
+  12:/usr/lib/avr/include/util/atomic.h ****      the documentation and/or other materials provided with the
+  13:/usr/lib/avr/include/util/atomic.h ****      distribution.
+  14:/usr/lib/avr/include/util/atomic.h **** 
+  15:/usr/lib/avr/include/util/atomic.h ****    * Neither the name of the copyright holders nor the names of
+  16:/usr/lib/avr/include/util/atomic.h ****      contributors may be used to endorse or promote products derived
+  17:/usr/lib/avr/include/util/atomic.h ****      from this software without specific prior written permission.
+  18:/usr/lib/avr/include/util/atomic.h **** 
+  19:/usr/lib/avr/include/util/atomic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20:/usr/lib/avr/include/util/atomic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21:/usr/lib/avr/include/util/atomic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22:/usr/lib/avr/include/util/atomic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23:/usr/lib/avr/include/util/atomic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24:/usr/lib/avr/include/util/atomic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25:/usr/lib/avr/include/util/atomic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26:/usr/lib/avr/include/util/atomic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27:/usr/lib/avr/include/util/atomic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28:/usr/lib/avr/include/util/atomic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29:/usr/lib/avr/include/util/atomic.h ****   POSSIBILITY OF SUCH DAMAGE.
+  30:/usr/lib/avr/include/util/atomic.h **** */
+  31:/usr/lib/avr/include/util/atomic.h **** 
+  32:/usr/lib/avr/include/util/atomic.h **** /* $Id$ */
+  33:/usr/lib/avr/include/util/atomic.h **** 
+  34:/usr/lib/avr/include/util/atomic.h **** #ifndef _UTIL_ATOMIC_H_
+  35:/usr/lib/avr/include/util/atomic.h **** #define _UTIL_ATOMIC_H_ 1
+  36:/usr/lib/avr/include/util/atomic.h **** 
+  37:/usr/lib/avr/include/util/atomic.h **** #include <avr/io.h>
+  38:/usr/lib/avr/include/util/atomic.h **** #include <avr/interrupt.h>
+  39:/usr/lib/avr/include/util/atomic.h **** 
+  40:/usr/lib/avr/include/util/atomic.h **** #if !defined(__DOXYGEN__)
+  41:/usr/lib/avr/include/util/atomic.h **** /* Internal helper functions. */
+  42:/usr/lib/avr/include/util/atomic.h **** static __inline__ uint8_t __iSeiRetVal(void)
+  43:/usr/lib/avr/include/util/atomic.h **** {
+  44:/usr/lib/avr/include/util/atomic.h ****     sei();
+  45:/usr/lib/avr/include/util/atomic.h ****     return 1;
+  46:/usr/lib/avr/include/util/atomic.h **** }
+  47:/usr/lib/avr/include/util/atomic.h **** 
+  48:/usr/lib/avr/include/util/atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
+  49:/usr/lib/avr/include/util/atomic.h **** {
+  50:/usr/lib/avr/include/util/atomic.h ****     cli();
+ 187               		.loc 3 50 0
+ 188               	/* #APP */
+ 189               	 ;  50 "/usr/lib/avr/include/util/atomic.h" 1
+ 190 0064 F894      		cli
+ 191               	 ;  0 "" 2
+ 192               	.LVL16:
+ 193               	/* #NOAPP */
+ 194               	.LBE16:
+ 195               	.LBE15:
+  18:./include/messages_disp.h **** 		lMesPointer = (lMesPointer + 1) & (maxMessages - 1); // сдвинем указатель
+ 196               		.loc 2 18 0
+ 197 0066 8091 0000 		lds r24,lMesPointer
+ 198 006a 9091 0000 		lds r25,lMesPointer+1
+ 199 006e 0196      		adiw r24,1
+ 200 0070 8F73      		andi r24,63
+ 201 0072 9927      		clr r25
+ 202 0074 9093 0000 		sts lMesPointer+1,r25
+ 203 0078 8093 0000 		sts lMesPointer,r24
+  19:./include/messages_disp.h **** 
+  20:./include/messages_disp.h **** 		msg = lMessage[lMesPointer].msg;
+ 204               		.loc 2 20 0
+ 205 007c 8091 0000 		lds r24,lMesPointer
+ 206 0080 9091 0000 		lds r25,lMesPointer+1
+ 207 0084 FC01      		movw r30,r24
+ 208 0086 EE0F      		lsl r30
+ 209 0088 FF1F      		rol r31
+ 210 008a 8E0F      		add r24,r30
+ 211 008c 9F1F      		adc r25,r31
+ 212 008e FC01      		movw r30,r24
+ 213 0090 E050      		subi r30,lo8(-(lMessage))
+ 214 0092 F040      		sbci r31,hi8(-(lMessage))
+ 215 0094 D081      		ld r29,Z
+ 216               	.LVL17:
+  21:./include/messages_disp.h **** 		par = lMessage[lMesPointer].par;
+ 217               		.loc 2 21 0
+ 218 0096 8091 0000 		lds r24,lMesPointer
+ 219 009a 9091 0000 		lds r25,lMesPointer+1
+ 220 009e FC01      		movw r30,r24
+ 221 00a0 EE0F      		lsl r30
+ 222 00a2 FF1F      		rol r31
+ 223 00a4 8E0F      		add r24,r30
+ 224 00a6 9F1F      		adc r25,r31
+ 225 00a8 FC01      		movw r30,r24
+ 226 00aa E050      		subi r30,lo8(-(lMessage))
+ 227 00ac F040      		sbci r31,hi8(-(lMessage))
+ 228 00ae 0181      		ldd r16,Z+1
+ 229 00b0 1281      		ldd r17,Z+2
+ 230               	.LVL18:
+ 231               	.LBB17:
+ 232               	.LBB18:
+  51:/usr/lib/avr/include/util/atomic.h ****     return 1;
+  52:/usr/lib/avr/include/util/atomic.h **** }
+  53:/usr/lib/avr/include/util/atomic.h **** 
+  54:/usr/lib/avr/include/util/atomic.h **** static __inline__ void __iSeiParam(const uint8_t *__s)
+  55:/usr/lib/avr/include/util/atomic.h **** {
+  56:/usr/lib/avr/include/util/atomic.h ****     sei();
+  57:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+  58:/usr/lib/avr/include/util/atomic.h ****     (void)__s;
+  59:/usr/lib/avr/include/util/atomic.h **** }
+  60:/usr/lib/avr/include/util/atomic.h **** 
+  61:/usr/lib/avr/include/util/atomic.h **** static __inline__ void __iCliParam(const uint8_t *__s)
+  62:/usr/lib/avr/include/util/atomic.h **** {
+  63:/usr/lib/avr/include/util/atomic.h ****     cli();
+  64:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+  65:/usr/lib/avr/include/util/atomic.h ****     (void)__s;
+  66:/usr/lib/avr/include/util/atomic.h **** }
+  67:/usr/lib/avr/include/util/atomic.h **** 
+  68:/usr/lib/avr/include/util/atomic.h **** static __inline__ void __iRestore(const  uint8_t *__s)
+  69:/usr/lib/avr/include/util/atomic.h **** {
+  70:/usr/lib/avr/include/util/atomic.h ****     SREG = *__s;
+ 233               		.loc 3 70 0
+ 234 00b2 2FBF      		out __SREG__,r18
+  71:/usr/lib/avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 235               		.loc 3 71 0
+ 236               	.LVL19:
+ 237               	.LBE18:
+ 238               	.LBE17:
+ 239               	.LBE14:
+  22:./include/messages_disp.h **** 	}
+  23:./include/messages_disp.h **** 
+  24:./include/messages_disp.h **** 	if (msg != 0 && numHandlers > 0) {
+ 240               		.loc 2 24 0
+ 241 00b4 DD23      		tst r29
+ 242 00b6 01F0      		breq .L7
+ 243 00b8 8091 0000 		lds r24,numHandlers
+ 244 00bc 8823      		tst r24
+ 245 00be 01F0      		breq .L7
+  25:./include/messages_disp.h **** 		for (i = numHandlers - 1; i >= 0; i--) { // просматриваем обработчики с 
+ 246               		.loc 2 25 0
+ 247 00c0 C091 0000 		lds r28,numHandlers
+ 248               	.L11:
+ 249 00c4 C150      		subi r28,lo8(-(-1))
+ 250               	.LVL20:
+ 251 00c6 C7FD      		sbrc r28,7
+ 252 00c8 00C0      		rjmp .L7
+  26:./include/messages_disp.h **** 			if (lHandler[i].msg == msg) { // последний занесенный имеет приори
+ 253               		.loc 2 26 0
+ 254 00ca EC2F      		mov r30,r28
+ 255 00cc 0C2E      		mov __tmp_reg__,r28
+ 256 00ce 000C      		lsl r0
+ 257 00d0 FF0B      		sbc r31,r31
+ 258 00d2 CF01      		movw r24,r30
+ 259 00d4 880F      		lsl r24
+ 260 00d6 991F      		rol r25
+ 261 00d8 E80F      		add r30,r24
+ 262 00da F91F      		adc r31,r25
+ 263 00dc E050      		subi r30,lo8(-(lHandler))
+ 264 00de F040      		sbci r31,hi8(-(lHandler))
+ 265 00e0 8081      		ld r24,Z
+ 266 00e2 D813      		cpse r29,r24
+ 267 00e4 00C0      		rjmp .L11
+  27:./include/messages_disp.h **** 				res = lHandler[i].hnd(par); // вызываем обработчик
+ 268               		.loc 2 27 0
+ 269 00e6 0180      		ldd __tmp_reg__,Z+1
+ 270 00e8 F281      		ldd r31,Z+2
+ 271 00ea E02D      		mov r30,__tmp_reg__
+ 272 00ec C801      		movw r24,r16
+ 273 00ee 0995      		icall
+ 274               	.LVL21:
+  28:./include/messages_disp.h **** 				if (res) { // если обработчик вернул 1, перываем обработку
+ 275               		.loc 2 28 0
+ 276 00f0 8823      		tst r24
+ 277 00f2 01F0      		breq .L11
+ 278 00f4 00C0      		rjmp .L7
+ 279               	.LBE13:
+ 280               	.LBE12:
+ 281               		.cfi_endproc
+ 282               	.LFE20:
+ 284               		.text
+ 285               	.Letext0:
+ 286               		.file 4 "/usr/lib/avr/include/stdint.h"
+ 287               		.file 5 "./include/messages.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccuR3aIe.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccuR3aIe.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccuR3aIe.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccuR3aIe.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccuR3aIe.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccuR3aIe.s:12     .text:0000000000000000 led1_ControlTask
+     /tmp/ccuR3aIe.s:36     .text:000000000000000c led2_ControlTask
+     /tmp/ccuR3aIe.s:59     .text:0000000000000018 led3_ControlTask
+     /tmp/ccuR3aIe.s:82     .text:0000000000000024 defaultTask
+     /tmp/ccuR3aIe.s:101    .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+initMessages
+setHandler
+setTimer
+hMesPointer
+lMesPointer
+lMessage
+numHandlers
+lHandler
