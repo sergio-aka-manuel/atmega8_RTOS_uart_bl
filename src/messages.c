@@ -142,36 +142,35 @@ void initMessages(void) {
 	/* главный таймер */	
         
 	/** 
-         * ATMEGA8 16bit timer
-         * --------------------
+         * ATMEGA8 8bit timer
+         * ------------------
          * mode: режим подсчета импульсов (сброс при совпадении)
-         * Mode WGM13   WGM12   WGM11   WGM10
-         * 4    0       1       0       0           CTC     OCR1A   Immediate   MAX
+         * Mode WGM21   WGM20
+         * 2    1       0       0           CTC     OCR2   Immediate   MAX
          * 
-         * CS12     CS11    CS10        Description
-         * 0        1       1           clk I/O /64 (From prescaler)
+         * CS22     CS21    CS20        Description
+         * 1        0       0           clk T2S /64 (From prescaler)
          * 
-         * 2486AA–AVR–02/2013 ATmega8/L datasheet p. 97-99
+         * 2486AA–AVR–02/2013 ATmega8/L datasheet p. 114-119
          */
-	TCCR1A = 0; // WGM11 = 0,  WGM10 = 0
-        TCCR1B = _BV(WGM12) | _BV(CS11) | _BV(CS10); // WGM13 = 0, CS12 = 0
+	TCCR2 = _BV(WGM21) | _BV(CS22); // WGM20 = 0, CS21 = 0, CS20 = 0
 
- 
-	/** регистр сравнения A
-	 * --------------------
+	/** регистр сравнения
+	 * ------------------
 	 */
-	OCR1A  = F_CPU / 62500UL; 
+	OCR2  = F_CPU / 62500UL; 
 
-	/** enable interrupt: при совпадении с A
-	 * -------------------------------------
+	/** enable interrupt:
+	 * ------------------
 	 */	
-	TIMSK |=_BV(OCIE1A);
+	TIMSK |=_BV(OCIE2);
+        TIFR |= _BV(OCF2);
 }
 
 /**
  * RTOS Timer Handler
  */
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER2_COMP_vect)
 {
 	dispatchTimer(); // а вот и диспетчер
 }

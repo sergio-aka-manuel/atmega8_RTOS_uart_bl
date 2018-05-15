@@ -852,58 +852,57 @@
  142:src/messages.c **** 	/* главный таймер */	
  143:src/messages.c ****         
  144:src/messages.c **** 	/** 
- 145:src/messages.c ****          * ATMEGA8 16bit timer
- 146:src/messages.c ****          * --------------------
+ 145:src/messages.c ****          * ATMEGA8 8bit timer
+ 146:src/messages.c ****          * ------------------
  147:src/messages.c ****          * mode: режим подсчета импульсов (сброс при совпаден
- 148:src/messages.c ****          * Mode WGM13   WGM12   WGM11   WGM10
- 149:src/messages.c ****          * 4    0       1       0       0           CTC     OCR1A   Immediate   MAX
+ 148:src/messages.c ****          * Mode WGM21   WGM20
+ 149:src/messages.c ****          * 2    1       0       0           CTC     OCR2   Immediate   MAX
  150:src/messages.c ****          * 
- 151:src/messages.c ****          * CS12     CS11    CS10        Description
- 152:src/messages.c ****          * 0        1       1           clk I/O /64 (From prescaler)
+ 151:src/messages.c ****          * CS22     CS21    CS20        Description
+ 152:src/messages.c ****          * 1        0       0           clk T2S /64 (From prescaler)
  153:src/messages.c ****          * 
- 154:src/messages.c ****          * 2486AA–AVR–02/2013 ATmega8/L datasheet p. 97-99
+ 154:src/messages.c ****          * 2486AA–AVR–02/2013 ATmega8/L datasheet p. 114-119
  155:src/messages.c ****          */
- 156:src/messages.c **** 	TCCR1A = 0; // WGM11 = 0,  WGM10 = 0
+ 156:src/messages.c **** 	TCCR2 = _BV(WGM21) | _BV(CS22); // WGM20 = 0, CS21 = 0, CS20 = 0
  637               		.loc 1 156 0
- 638 02a6 1FBC      		out 0x2f,__zero_reg__
- 157:src/messages.c ****         TCCR1B = _BV(WGM12) | _BV(CS11) | _BV(CS10); // WGM13 = 0, CS12 = 0
- 639               		.loc 1 157 0
- 640 02a8 8BE0      		ldi r24,lo8(11)
- 641 02aa 8EBD      		out 0x2e,r24
- 158:src/messages.c **** 
- 159:src/messages.c ****  
- 160:src/messages.c **** 	/** регистр сравнения A
- 161:src/messages.c **** 	 * --------------------
- 162:src/messages.c **** 	 */
- 163:src/messages.c **** 	OCR1A  = F_CPU / 62500UL; 
- 642               		.loc 1 163 0
- 643 02ac 80E8      		ldi r24,lo8(-128)
- 644 02ae 90E0      		ldi r25,0
- 645 02b0 9BBD      		out 0x2a+1,r25
- 646 02b2 8ABD      		out 0x2a,r24
- 164:src/messages.c **** 
- 165:src/messages.c **** 	/** enable interrupt: при совпадении с A
- 166:src/messages.c **** 	 * -------------------------------------
- 167:src/messages.c **** 	 */	
- 168:src/messages.c **** 	TIMSK |=_BV(OCIE1A);
- 647               		.loc 1 168 0
- 648 02b4 89B7      		in r24,0x39
- 649 02b6 8061      		ori r24,lo8(16)
- 650 02b8 89BF      		out 0x39,r24
+ 638 02a6 8CE0      		ldi r24,lo8(12)
+ 639 02a8 85BD      		out 0x25,r24
+ 157:src/messages.c **** 
+ 158:src/messages.c **** 	/** регистр сравнения
+ 159:src/messages.c **** 	 * ------------------
+ 160:src/messages.c **** 	 */
+ 161:src/messages.c **** 	OCR2  = F_CPU / 62500UL; 
+ 640               		.loc 1 161 0
+ 641 02aa 80E8      		ldi r24,lo8(-128)
+ 642 02ac 83BD      		out 0x23,r24
+ 162:src/messages.c **** 
+ 163:src/messages.c **** 	/** enable interrupt:
+ 164:src/messages.c **** 	 * ------------------
+ 165:src/messages.c **** 	 */	
+ 166:src/messages.c **** 	TIMSK |=_BV(OCIE2);
+ 643               		.loc 1 166 0
+ 644 02ae 89B7      		in r24,0x39
+ 645 02b0 8068      		ori r24,lo8(-128)
+ 646 02b2 89BF      		out 0x39,r24
+ 167:src/messages.c ****         TIFR |= _BV(OCF2);
+ 647               		.loc 1 167 0
+ 648 02b4 88B7      		in r24,0x38
+ 649 02b6 8068      		ori r24,lo8(-128)
+ 650 02b8 88BF      		out 0x38,r24
  651 02ba 0895      		ret
  652               		.cfi_endproc
  653               	.LFE21:
- 655               	.global	__vector_6
- 657               	__vector_6:
+ 655               	.global	__vector_3
+ 657               	__vector_3:
  658               	.LFB22:
- 169:src/messages.c **** }
- 170:src/messages.c **** 
- 171:src/messages.c **** /**
- 172:src/messages.c ****  * RTOS Timer Handler
- 173:src/messages.c ****  */
- 174:src/messages.c **** ISR(TIMER1_COMPA_vect)
- 175:src/messages.c **** {
- 659               		.loc 1 175 0
+ 168:src/messages.c **** }
+ 169:src/messages.c **** 
+ 170:src/messages.c **** /**
+ 171:src/messages.c ****  * RTOS Timer Handler
+ 172:src/messages.c ****  */
+ 173:src/messages.c **** ISR(TIMER2_COMP_vect)
+ 174:src/messages.c **** {
+ 659               		.loc 1 174 0
  660               		.cfi_startproc
  661 02bc 1F92      		push r1
  662               	.LCFI4:
@@ -968,13 +967,13 @@
  721               	/* frame size = 0 */
  722               	/* stack size = 15 */
  723               	.L__stack_usage = 15
- 176:src/messages.c **** 	dispatchTimer(); // а вот и диспетчер
- 724               		.loc 1 176 0
+ 175:src/messages.c **** 	dispatchTimer(); // а вот и диспетчер
+ 724               		.loc 1 175 0
  725 02de 00D0      		rcall dispatchTimer
  726               	.LVL51:
  727               	/* epilogue start */
- 177:src/messages.c **** }
- 728               		.loc 1 177 0
+ 176:src/messages.c **** }
+ 728               		.loc 1 176 0
  729 02e0 FF91      		pop r31
  730 02e2 EF91      		pop r30
  731 02e4 BF91      		pop r27
@@ -1006,26 +1005,26 @@
  758               		.file 4 "./include/messages.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 messages.c
-     /tmp/cco4RtZ4.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cco4RtZ4.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cco4RtZ4.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cco4RtZ4.s:5      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cco4RtZ4.s:6      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cco4RtZ4.s:12     .text:0000000000000000 setHandler
+     /tmp/ccnZfXO1.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccnZfXO1.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccnZfXO1.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccnZfXO1.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccnZfXO1.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccnZfXO1.s:12     .text:0000000000000000 setHandler
                             *COM*:0000000000000001 numHandlers
                             *COM*:0000000000000060 lHandler
-     /tmp/cco4RtZ4.s:89     .text:000000000000004c killHandler
-     /tmp/cco4RtZ4.s:215    .text:00000000000000e4 sendMessage
+     /tmp/ccnZfXO1.s:89     .text:000000000000004c killHandler
+     /tmp/ccnZfXO1.s:215    .text:00000000000000e4 sendMessage
                             *COM*:0000000000000002 hMesPointer
                             *COM*:00000000000000c0 lMessage
                             *COM*:0000000000000002 lMesPointer
-     /tmp/cco4RtZ4.s:316    .text:0000000000000168 setTimer
+     /tmp/ccnZfXO1.s:316    .text:0000000000000168 setTimer
                             *COM*:0000000000000001 numTimers
                             *COM*:0000000000000070 lTimer
-     /tmp/cco4RtZ4.s:443    .text:00000000000001e4 killTimer
-     /tmp/cco4RtZ4.s:533    .text:000000000000023c dispatchTimer
-     /tmp/cco4RtZ4.s:619    .text:000000000000028e initMessages
-     /tmp/cco4RtZ4.s:657    .text:00000000000002bc __vector_6
+     /tmp/ccnZfXO1.s:443    .text:00000000000001e4 killTimer
+     /tmp/ccnZfXO1.s:533    .text:000000000000023c dispatchTimer
+     /tmp/ccnZfXO1.s:619    .text:000000000000028e initMessages
+     /tmp/ccnZfXO1.s:657    .text:00000000000002bc __vector_3
 
 UNDEFINED SYMBOLS
 __do_clear_bss

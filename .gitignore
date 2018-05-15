@@ -1,6 +1,7 @@
 *.eep
 *.hex
 *.lss
+*.lst
 *.map
 *.sym
 *.bin
