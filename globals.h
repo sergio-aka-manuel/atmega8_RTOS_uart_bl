@@ -8,7 +8,7 @@
 
 #pragma once
 
-#ifndef __AVR_ATmega8__//__AVR_ATmega168__//__AVR_ATmega8U2__//__AVR_ATmega328P__
+#ifndef __AVR_ATmega8__ //__AVR_ATmega168__ | __AVR_ATmega328P__
 #define __AVR_ATmega8__
 #endif//__AVR_ATmega8__
 
@@ -30,7 +30,7 @@
 #include "avrlibtypes.h"
 #include "avrlibdefs.h"
 
-
+/* macro */
 #define HI(x) 			((x)>>8)
 #define LO(x) 			((x)&0xFF)
 
@@ -51,8 +51,8 @@
 #define GET_BIT(d,b)		((d>>b) & 0x01)
 #define SET_BIT(d,b)		(d |= (1<<b))
 #define RESET_BIT(d,b)		(d &= ~(1<<b))
-
-
+ 
+/* GPIO */
 #define         ARDUINO_LED_D13                         B,5
 //#define	GPIO_LED1				B,0
 //#define	GPIO_LED2				B,1
@@ -60,6 +60,11 @@
 //#define	GPIO_BTN2				D,5
 //#define	GPIO_BTN3				D,6
 
+/* USART */
+#define USART_BAUD              9600
+#define UBRR                    (F_CPU / 16 / USART_BAUD -1)
+
+/* DEBUG */
 //#define DEBUG
 //#define DBG_STR_LEN				64
 

@@ -20,7 +20,6 @@ extern "C"
 {
 #endif
 
-#define PK                  0
 
 
 #ifdef __cplusplus

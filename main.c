@@ -49,12 +49,16 @@ uint8_t led2_ControlTask(msg_par par) {
  */
 uint8_t led3_ControlTask(msg_par par) {
     PORTC ^= 0x08;
-    //PORTC |= 0x01;
-    
+
     return 1;
 }
 
 int main(void) {
+    /* GPIO: init */
+    //DDRB |= 0xFF;
+
+    PORTC &= ~(0x39);
+    DDRC |= 0x39;
 
     /** Watchdog Timer Control Register – WDTCR
      * 2486AA–AVR–02/2013 ATmega8/L datasheet pp. 43-45
@@ -63,13 +67,20 @@ int main(void) {
     WDTCR = _BV(WDCE) | _BV(WDE);
     WDTCR |= _BV(WDP0); //32K oscillator cycles
 
-    /* GPIO: init */
-    //DDRB |= 0xFF;
+    if (MCUCSR & _BV(WDRF) /*WDRF: Watchdog Reset Flag*/) {
+        MCUCSR &= ~(_BV(WDRF)); //FIXME!: reset flag?
+        PORTC |= 0x01; //error led
+    }
 
-    PORTC &= ~(0x39);
-    DDRC |= 0x39;
-
-
+    /* USART: init */
+    UBRRH = HI(UBRR); //set baud rate
+    UBRRL = LO(UBRR);
+    
+    
+    UCSRB |= _BV(RXEN) | _BV(TXEN) | _BV(RXCIE); //enable rx, tx and rx complete interrupt
+    UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0); //8bits data, parity none, 1bit stop
+    
+    
     /* RTOS: init */
     initMessages();
 
@@ -103,4 +114,23 @@ int main(void) {
          * - ...
          */
     }
+}
+
+/**
+ * RXCIE: USART RX Complete Interrupt handler
+ */
+ISR(USART_RXC_vect) {
+    uint8_t buf = UDR;
+    UDR = buf;
+    
+    //TODO: ...
+    UCSRB |= _BV(UDRIE); //enable: USART Data Register Empty Interrupt
+}
+
+/**
+ * UDRIE: USART Data Register Empty Interrupt handler
+ */
+ISR(USART_UDRE_vect) {
+    //TODO: ...
+    UCSRB &= ~(_BV(UDRIE)); //disable interrupt
 }
